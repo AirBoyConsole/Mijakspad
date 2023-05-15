@@ -1,0 +1,6 @@
+[submodule "airboy-software"]
+	path = airboy-software
+	url = https://github.com/AirBoyConsole/Software.git
+[submodule "Software"]
+	path = airboy-software
+	url = https://github.com/AirBoyConsole/Software.git
