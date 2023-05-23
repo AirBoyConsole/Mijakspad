@@ -39,6 +39,7 @@ class Tetromino {
 		void hardfall();
 		void setx(int x);
 		void sety(int y);
+		void setrotation(int rotation);
 		int gety();
 		piece gettype();
 		void rotate(bool left);
@@ -98,9 +99,9 @@ class Mijakspad : public airboy::Engine
 		} state = MENU;
 
 		enum {
-			EASY = 30,
-			MEDIUM = 20,
-			HARD = 10,
+			EASY = 100,
+			MEDIUM = 80,
+			HARD = 50,
 		} difficulty = EASY;
 
 		void setup() override
@@ -485,21 +486,26 @@ void Mijakspad::checklines()
 void Mijakspad::handleinput()
 {
 	if (state == DEAD) {
-		if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		// if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT))
 			state = MENU;
 	} else if (state == PAUSE) {
-		if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		// if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT))
 			state = PLAY;
 	} else if (state == HELP) {
-		if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		// if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT))
 			state = MENU;
 	} else if (state == MENU) {
-		if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		// if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT))
 			newgame();
 		else if (input->is_just_pressed(airboy::Buttons::BUTTON_AIRBOY))
 			state = HELP;
 		else {
-			if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT)) {
+			// if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT)) {
+			if (input->is_just_pressed(airboy::Buttons::BUTTON_START)) {
 				changedifficulty(false);
 			}
 			if (input->is_just_pressed(airboy::Buttons::BUTTON_DPAD_DOWN)) {
@@ -516,7 +522,8 @@ void Mijakspad::handleinput()
 			}
 		}
 	} else if (state == PLAY) {
-		if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		// if (input->is_just_pressed(airboy::Buttons::BUTTON_START))
+		if (input->is_just_pressed(airboy::Buttons::BUTTON_SELECT))
 			state = PAUSE;
 		else {
 			if (input->is_just_pressed(airboy::Buttons::BUTTON_ACTION_A)) {
@@ -541,6 +548,7 @@ void Mijakspad::handleinput()
 					hold = temp;
 					hold->setx(10 * BLOCKSIZE + 50);
 					hold->sety(105);
+					hold->setrotation(0);
 
 					usedhold = true;
 				}
@@ -559,19 +567,21 @@ void Mijakspad::handleinput()
 				next = new Tetromino(10 * BLOCKSIZE + 50, 25, bag->generatepiece(), this->display);
 				usedhold = false;
 			}
-			if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_LEFT)) {
+			// if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_LEFT)) {
+			if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_RIGHT)) {
 				if (leftcounter == 0 || lefttimeout == 0) {
 					current->move(true);
-					leftcounter = leftcounter == 0 ? 15 : 6;
+					leftcounter = leftcounter == 0 ? 20 : 10;
 					lefttimeout = leftcounter;
 				} else
 					lefttimeout--;
 			} else
 				lefttimeout = 0;
-			if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_RIGHT)) {
+			// if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_RIGHT)) {
+			if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_LEFT)) {
 				if (rightcounter == 0 || righttimeout == 0) {
 					current->move(false);
-					rightcounter = rightcounter == 0 ? 15 : 6;
+					rightcounter = rightcounter == 0 ? 20 : 10;
 					righttimeout = rightcounter;
 				} else
 					righttimeout--;
@@ -579,8 +589,8 @@ void Mijakspad::handleinput()
 				righttimeout = 0;
 			if (input->is_pressed(airboy::Buttons::BUTTON_DPAD_DOWN)) {
 				if (downcounter == 0 || downtimeout == 0) {
-					speedup = 2;
-					downcounter = downcounter == 0 ? 15 : 6;
+					speedup = 10;
+					downcounter = downcounter == 0 ? 10 : 2;
 					downtimeout = downcounter;
 				} else
 					downtimeout--;
@@ -747,6 +757,14 @@ int Tetromino::gety()
 piece Tetromino::gettype()
 {
 	return type;
+}
+
+
+void Tetromino::setrotation(int rotation)
+{
+	this->rotation = rotation;
+
+	moveblocks();
 }
 
 
